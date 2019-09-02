@@ -5,7 +5,11 @@
 package it.polito.tdp.artsmia;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
+
+import it.polito.tdp.artsmia.model.ArtObject;
+import it.polito.tdp.artsmia.model.ModelArtsmia;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -14,6 +18,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
 public class ArtsmiaController {
+	boolean grafoCreato;
 
 	@FXML // ResourceBundle that was given to the FXMLLoader
 	private ResourceBundle resources;
@@ -39,14 +44,46 @@ public class ArtsmiaController {
 	@FXML // fx:id="txtResult"
 	private TextArea txtResult; // Value injected by FXMLLoader
 
+	private ModelArtsmia model;
+
 	@FXML
 	void doAnalizzaOggetti(ActionEvent event) {
-		txtResult.setText("doAnalizzaOggetti");
+		this.model.creaGrafo();
+		this.grafoCreato = true;
+		txtResult.appendText("Grafo creato! "+model.getVertexSize()+" vertici e "+ model.getEdgeSize()+" archi.");
 	}
 
 	@FXML
 	void doCalcolaComponenteConnessa(ActionEvent event) {
-		txtResult.setText("doCalcolaComponenteConnessa");
+		if(this.grafoCreato == false) {
+			model.creaGrafo();// ha senso??
+			this.grafoCreato = true;
+		}
+		
+		int idInserito = -1;
+		if(!txtObjectId.getText().isEmpty()) {
+			try {
+				idInserito = Integer.parseInt(txtObjectId.getText());
+			}catch(NumberFormatException e) {
+				txtResult.setText("Inserire un numero come id");
+				return;
+			}
+			if(model.verificaId(idInserito)) {
+				List<ArtObject> risultato = model.getComponenteConnessa(idInserito);
+				txtResult.setText("I vertici che compongono la Componente connessa sono: "+risultato.size());
+				txtObjectId.clear();
+		
+			}else {
+				txtResult.setText("Non esistono oggetti che corrispondano all'id inserito");
+				txtObjectId.clear();
+				return;
+			}
+				
+			
+		}else {
+		txtResult.setText("Inserire un id per effettuare il calcolo della ComponenteConnessa");
+		return;
+		}
 	}
 
 	@FXML
@@ -62,6 +99,12 @@ public class ArtsmiaController {
 		assert btnAnalizzaOggetti != null : "fx:id=\"btnAnalizzaOggetti\" was not injected: check your FXML file 'Artsmia.fxml'.";
 		assert txtObjectId != null : "fx:id=\"txtObjectId\" was not injected: check your FXML file 'Artsmia.fxml'.";
 		assert txtResult != null : "fx:id=\"txtResult\" was not injected: check your FXML file 'Artsmia.fxml'.";
+		this.grafoCreato = false;
 
+	}
+
+	public void setModel(ModelArtsmia model) {
+		this.model = model;
+		
 	}
 }

@@ -1,5 +1,6 @@
 package it.polito.tdp.artsmia;
 
+import it.polito.tdp.artsmia.model.ModelArtsmia;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -11,10 +12,12 @@ public class Main extends Application {
 	public void start(Stage primaryStage) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("Artsmia.fxml"));
-			BorderPane root = (BorderPane) loader.load();
+			BorderPane root = (BorderPane)loader.load();
 			Scene scene = new Scene(root);
 
 			ArtsmiaController controller = loader.getController();
+			ModelArtsmia model = new ModelArtsmia();
+			controller.setModel(model);
 
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
